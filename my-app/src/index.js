@@ -1,11 +1,22 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, protocol } = require('electron');
 const path = require('path');
+const qs = require('qs');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 // eslint-disable-next-line global-require
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
+
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: "myapp",
+    privileges: {
+      bypassCSP: true,
+      supportFetchAPI: true
+    }
+  }
+])
 
 const createWindow = () => {
   // Create the browser window.
@@ -14,6 +25,9 @@ const createWindow = () => {
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+
+      // preload.js use node modules
+      nodeIntegration: true,
     },
   });
 
@@ -24,7 +38,7 @@ const createWindow = () => {
   // and load the index.html of the app.
   // mainWindow.loadFile(path.join(__dirname, 'index.html'));
 
-  mainWindow.loadURL("http://127.0.0.1:5174/");
+  mainWindow.loadURL("http://127.0.0.1:5173/");
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
@@ -33,7 +47,27 @@ const createWindow = () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', () => {
+  createWindow()
+
+  protocol.registerBufferProtocol('myapp', (req, cb) => {
+    // https://nodejs.org/api/url.html
+    const url = new URL(req.url)
+
+    const res = {
+      errNo: 0,
+      errMsg: 'ok',
+      action: url.hostname,
+      query: qs.parse(url.search, { ignoreQueryPrefix: true })
+    }
+
+    cb({
+      mimeType: "application/json",
+		  data: Buffer.from(JSON.stringify(res)),
+    })
+  })
+})
+
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

@@ -1,4 +1,12 @@
 {
-    "private": true,
-    "workspaces": ["my-app", "pages/*"]
+  "private": true,
+  "workspaces":{
+    "packages":  [
+      "my-app",
+      "pages/*"
+    ],
+    "nohoist": [
+      "my-app/**"
+    ]
   }
+}
