@@ -1,6 +1,6 @@
 
-export const isInApp = () => /app/ig.test(window.navigator.userAgent)
+export const isInApp = () => /my\-app/ig.test(window.navigator.userAgent)
 
-export const getVersions = () => versions ?? null
+export const getVersions = () => window?.versions ?? null
 
-export const getActions = () => actions ?? null
+export const getActions = () => window?.actions ?? null
