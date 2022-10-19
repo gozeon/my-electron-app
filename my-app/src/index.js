@@ -27,7 +27,7 @@ const createWindow = () => {
       preload: path.join(__dirname, 'preload.js'),
 
       // preload.js use node modules
-      nodeIntegration: true,
+      nodeIntegration: false,
     },
   });
 

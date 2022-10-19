@@ -1,7 +1,7 @@
 import './style.css'
 import javascriptLogo from './javascript.svg'
 import { setupCounter } from './counter.js'
-import { isInApp, getVersions, getActions } from './hybrid.js'
+import { isInApp, getVersions, ping } from 'hybrid-sdk'
 
 document.querySelector('#app').innerHTML = `
   <div>
@@ -23,10 +23,10 @@ document.querySelector('#app').innerHTML = `
 
 setupCounter(document.querySelector('#counter'))
 
-if(isInApp()) {
+if (isInApp()) {
   document.querySelector('#app .read-the-docs').innerHTML = `<pre>${JSON.stringify(getVersions())}\n${window.navigator.userAgent}</pre>`
 
   document.querySelector('#app .read-the-docs').addEventListener('click', e => {
-    getActions()['ping']({msg: '你好世界! hello world'}).then(res => alert(res.query.msg))
+    ping('你好世界! hello world').then(res => alert(res.query.msg))
   })
 }

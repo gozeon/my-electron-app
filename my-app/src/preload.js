@@ -2,7 +2,6 @@
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 
 const { contextBridge } = require('electron')
-const qs = require('qs')
 
 contextBridge.exposeInMainWorld('versions', {
     chrome: process.versions['chrome'],
@@ -10,6 +9,4 @@ contextBridge.exposeInMainWorld('versions', {
     electron: process.versions['electron'],
 })
 
-contextBridge.exposeInMainWorld('actions', {
-    ping: payload => fetch(`myapp://ping?${qs.stringify(payload)}`).then(res => res.json())
-})
+contextBridge.exposeInMainWorld('actions', (action, query) => fetch(`myapp://${action}?${query}`).then(res => res.json()))
